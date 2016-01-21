@@ -6,6 +6,7 @@ require 'rufus-scheduler'
 require "cruisecontrolrb-to-slack/version"
 require "cruisecontrolrb-to-slack/cruisecontrolrb"
 require "cruisecontrolrb-to-slack/slack_client"
+require "cruisecontrolrb-to-slack/quotes"
 
 module CruisecontrolrbToSlack
 
@@ -70,7 +71,11 @@ module CruisecontrolrbToSlack
       color = (status_hash[:status] == "Success") ? "good" : "danger"
       emoji = (status_hash[:status] == "Success") ? ":tada:" : FAILED_EMOJIS[rand(3)]
 
-      message = (status_hash[:status] == "Success") ? "<#{url}|Success!> #{name} is looking good. You are a stud! :D" : "You are a failure! #{name} is broken. <a href=\"#{url}\">See details</a> and fix it now! >:-(" 
+      message = if (status_hash[:status] == "Success") then
+                  "<#{url}|Success!> #{name} \"#{Quotes.success.sample}\""
+                else
+                  "<#{url}|Failure!> #{name} <a href=\"#{url}\">See details</a> \"#{Quotes.failure.sample}\""
+                end
       attachment = {
                     fallback: project_details[:commit_comment],
                     color: color,
